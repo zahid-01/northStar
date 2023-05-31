@@ -49,9 +49,17 @@ exports.login = catchAsync(async (req, res, next) => {
 
   const token = createSendToken(user, res);
 
+  const userData = {
+    name: user.name,
+    email: user.email,
+    phone: user.phone,
+    address: user.address,
+    id: user._id,
+  };
+
   res.status(200).json({
     status: "Success",
-    user,
+    userData,
     token,
   });
 });
