@@ -45,7 +45,7 @@ exports.login = catchAsync(async (req, res, next) => {
 
   const match = await user.checkPassword(password, user.password);
 
-  if (!match) return next(new AppError(404, "Invalid credentials"));
+  if (!match) return next(new AppError(203, "Invalid credentials"));
 
   const token = createSendToken(user, res);
 
