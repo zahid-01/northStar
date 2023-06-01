@@ -8,7 +8,7 @@ const errorController = (err, res) => {
 };
 
 module.exports = (err, req, res, next) => {
-  err.statusCode = err.statusCode || 500;
+  err.statusCode = err.statusCode || 203;
   err.status = err.status || "Fail";
 
   errorController(err, res);

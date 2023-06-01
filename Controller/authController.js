@@ -18,16 +18,29 @@ const createSendToken = ({ _id }, res) => {
   return cookie;
 };
 
+const sendAuthResponse = (res, user, message, token) => {
+  const userData = {
+    name: user.name,
+    email: user.email,
+    phone: user.phone,
+    address: user.address,
+    id: user._id,
+  };
+
+  res.status(200).json({
+    status: "Success",
+    message,
+    userData,
+    token,
+  });
+};
+
 exports.signUp = catchAsync(async (req, res) => {
   const user = await User.create(req.body);
 
   const token = createSendToken(user, res);
 
-  res.status(200).json({
-    status: "Success",
-    message: "Account created successfully",
-    token,
-  });
+  sendAuthResponse(res, user, "Account created successfully", token);
 });
 
 exports.login = catchAsync(async (req, res, next) => {
@@ -49,19 +62,7 @@ exports.login = catchAsync(async (req, res, next) => {
 
   const token = createSendToken(user, res);
 
-  const userData = {
-    name: user.name,
-    email: user.email,
-    phone: user.phone,
-    address: user.address,
-    id: user._id,
-  };
-
-  res.status(200).json({
-    status: "Success",
-    userData,
-    token,
-  });
+  sendAuthResponse(res, user, "Logged In successfully", token);
 });
 
 exports.protect = catchAsync(async (req, res, next) => {
