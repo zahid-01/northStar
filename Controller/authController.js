@@ -3,21 +3,6 @@ const User = require("../Model/userModel");
 const { catchAsync } = require("../Utilities/catchAsync");
 const AppError = require("../Utilities/error");
 
-const createSendToken = ({ _id }, res) => {
-  const cookie = jwt.sign({ data: _id }, process.env.JWT_SECRET, {
-    expiresIn: "90d",
-  });
-
-  const cookieOptions = {
-    expires: new Date(Date.now() + 90 * 24 * 60 * 60 * 60),
-    secure: true,
-    httpOnly: false,
-  };
-
-  res.cookie("JWT", cookie, cookieOptions);
-  return cookie;
-};
-
 const sendAuthResponse = (res, user, message, token) => {
   const userData = {
     name: user.name,
@@ -33,6 +18,21 @@ const sendAuthResponse = (res, user, message, token) => {
     userData,
     token,
   });
+};
+
+const createSendToken = ({ _id }, res) => {
+  const cookie = jwt.sign({ data: _id }, process.env.JWT_SECRET, {
+    expiresIn: "90d",
+  });
+
+  const cookieOptions = {
+    expires: new Date(Date.now() + 90 * 24 * 60 * 60 * 60),
+    secure: true,
+    httpOnly: false,
+  };
+
+  res.cookie("JWT", cookie, cookieOptions);
+  return cookie;
 };
 
 exports.signUp = catchAsync(async (req, res) => {
