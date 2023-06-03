@@ -66,15 +66,18 @@ exports.getProduct = catchAsync(async (req, res) => {
 });
 
 exports.getAllProducts = catchAsync(async (req, res) => {
-  const product = await Product.find();
-  const images = product.images.map((el) => {
-    return req.protocol + "://" + req.get("host") + "/img/products/" + el;
-  });
+  const products = await Product.find();
 
-  product.images = images;
+  products.forEach((el) => {
+    const images = el.images.map((el) => {
+      return req.protocol + "://" + req.get("host") + "/img/products/" + el;
+    });
+
+    el.images = images;
+  });
 
   res.status(200).json({
     status: "Success",
-    product,
+    products,
   });
 });
