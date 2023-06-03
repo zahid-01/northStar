@@ -2,6 +2,7 @@ const express = require("express");
 const morgan = require("morgan");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
+const path = require("path");
 
 const appError = require("./Utilities/error");
 const errorController = require("./Controller/errorController");
@@ -15,6 +16,7 @@ app.use(morgan("dev"));
 app.use(cookieParser());
 app.use(cors());
 app.options("*", cors());
+app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/user", userRouter);
 app.use("/products", productRouter);

@@ -13,6 +13,15 @@ const ProductsSchema = mongoose.Schema({
     type: Number,
     required: [true, "Provide a product price"],
   },
+  productCode: {
+    required: [true, "Provide a product code"],
+    type: String,
+    unique: [true, "Product exists"],
+  },
+  images: {
+    type: [String],
+    default: "default.jpg",
+  },
 });
 
 const Product = new mongoose.model("products", ProductsSchema);

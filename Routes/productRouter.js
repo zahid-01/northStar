@@ -8,6 +8,8 @@ const {
   updateProduct,
   getProduct,
   getAllProducts,
+  uploadPhoto,
+  resizePhoto,
 } = require("../Controller/productController");
 
 productRouter
@@ -17,7 +19,8 @@ productRouter
   .delete(deleteProduct);
 
 productRouter.use(protect);
-productRouter.post("/add", addProduct);
+
+productRouter.post("/add", uploadPhoto, resizePhoto, addProduct);
 
 productRouter.get("/", getAllProducts);
 
