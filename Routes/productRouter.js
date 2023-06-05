@@ -12,13 +12,13 @@ const {
   resizePhoto,
 } = require("../Controller/productController");
 
+productRouter.use(protect);
+
 productRouter
   .route("/:id")
   .get(getProduct)
-  .patch(updateProduct)
+  .patch(uploadPhoto, resizePhoto, updateProduct)
   .delete(deleteProduct);
-
-productRouter.use(protect);
 
 productRouter.post("/add", uploadPhoto, resizePhoto, addProduct);
 

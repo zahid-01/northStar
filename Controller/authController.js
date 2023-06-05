@@ -27,10 +27,13 @@ const createSendToken = ({ _id }, res) => {
 
   const cookieOptions = {
     expires: new Date(Date.now() + 90 * 24 * 60 * 60 * 60),
+    httpOnly: true,
+    sameSite: "none",
+    // secure: req.secure || req.headers["x-forwarded-proto"] === "https",
     secure: true,
-    httpOnly: false,
   };
 
+  res.set("Access-Controll-Allow-Credentials", "*");
   res.cookie("JWT", cookie, cookieOptions);
   return cookie;
 };
@@ -66,6 +69,6 @@ exports.login = catchAsync(async (req, res, next) => {
 });
 
 exports.protect = catchAsync(async (req, res, next) => {
-  // console.log(req.headers.authorization);
+  // console.log(req.cookies);
   next();
 });

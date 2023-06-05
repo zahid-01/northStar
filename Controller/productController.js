@@ -14,7 +14,6 @@ const AppError = require("../Utilities/error");
 const { catchAsync } = require("../Utilities/catchAsync");
 
 exports.resizePhoto = catchAsync(async (req, res, next) => {
-  console.log(req.body);
   if (!req.files) return next();
   req.body.images = [];
 
@@ -39,6 +38,7 @@ exports.resizePhoto = catchAsync(async (req, res, next) => {
 const multerStorage = multer.memoryStorage();
 
 const multerFilter = (req, file, cb) => {
+  console.log(file);
   if (file.mimetype.startsWith("image")) cb(null, true);
   else cb(new AppError(400, "Not an image"));
 };
