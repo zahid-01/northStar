@@ -38,7 +38,6 @@ exports.resizePhoto = catchAsync(async (req, res, next) => {
 const multerStorage = multer.memoryStorage();
 
 const multerFilter = (req, file, cb) => {
-  console.log(file);
   if (file.mimetype.startsWith("image")) cb(null, true);
   else cb(new AppError(400, "Not an image"));
 };

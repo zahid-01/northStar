@@ -18,11 +18,29 @@ const ProductsSchema = mongoose.Schema({
     type: String,
     unique: [true, "Product exists"],
   },
+  productCategory: {
+    type: String,
+    enum: ["keyboards", "monitors", "all-in-one", "printers"],
+  },
+  productBrand: {
+    type: String,
+    enum: ["hp", "dell", "epson", "canon"],
+  },
   images: {
     type: [String],
     default: "default.jpg",
   },
 });
+
+// ProductsSchema.pre("save", function () {
+//   const id = this._id.toHexString();
+//   let images = [];
+//   this.images.forEach((el) => {
+//     let img = el.split("-")[1];
+//     images.push(`${id}-${img}`);
+//   });
+//   this.images = images;
+// });
 
 const Product = new mongoose.model("products", ProductsSchema);
 module.exports = Product;

@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken");
+
 const User = require("../Model/userModel");
 const { catchAsync } = require("../Utilities/catchAsync");
 const AppError = require("../Utilities/error");
@@ -69,6 +70,20 @@ exports.login = catchAsync(async (req, res, next) => {
 });
 
 exports.protect = catchAsync(async (req, res, next) => {
-  // console.log(req.cookies);
+  let authToken = req.headers.authorization;
+  let token;
+
+  if (req.headers.authorization && authToken.startsWith("Bearer"))
+    token = authToken.split(" ")[1];
+  if (!token) return next(new AppError(404, "Not Logged in"));
+
+  const { data } = jwt.verify(token, process.env.JWT_SECRET);
+
+  const user = await User.findById(data);
+
+  if (!user) return next(new AppError(404, "User does not exists"));
+
+  req.user = user;
+
   next();
 });

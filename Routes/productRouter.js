@@ -12,16 +12,15 @@ const {
   resizePhoto,
 } = require("../Controller/productController");
 
-productRouter.use(protect);
+productRouter.get("/", getAllProducts);
+productRouter.route("/:id").get(getProduct);
 
+productRouter.use(protect);
 productRouter
   .route("/:id")
-  .get(getProduct)
   .patch(uploadPhoto, resizePhoto, updateProduct)
   .delete(deleteProduct);
 
 productRouter.post("/add", uploadPhoto, resizePhoto, addProduct);
-
-productRouter.get("/", getAllProducts);
 
 module.exports = productRouter;
