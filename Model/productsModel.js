@@ -42,5 +42,9 @@ const ProductsSchema = mongoose.Schema({
 //   this.images = images;
 // });
 
+ProductsSchema.pre(/^find/, function () {
+  console.log(this);
+});
+
 const Product = new mongoose.model("products", ProductsSchema);
 module.exports = Product;

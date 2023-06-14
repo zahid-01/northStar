@@ -30,7 +30,6 @@ ordersSchema.pre(/^find/, function (next) {
   this.find()
     .populate({
       path: "product",
-      select: "-images",
     })
     .populate({ path: "customer" });
   next();

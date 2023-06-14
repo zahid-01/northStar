@@ -75,6 +75,7 @@ exports.getAllProducts = catchAsync(async (req, res) => {
     el.images = images;
   });
 
+  res.cookie("test", "1234");
   res.status(200).json({
     status: "Success",
     products,

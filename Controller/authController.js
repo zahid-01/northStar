@@ -28,7 +28,7 @@ const createSendToken = ({ _id }, res) => {
 
   const cookieOptions = {
     expires: new Date(Date.now() + 90 * 24 * 60 * 60 * 60),
-    httpOnly: true,
+    httpOnly: false,
     sameSite: "none",
     // secure: req.secure || req.headers["x-forwarded-proto"] === "https",
     secure: true,
@@ -70,11 +70,15 @@ exports.login = catchAsync(async (req, res, next) => {
 });
 
 exports.protect = catchAsync(async (req, res, next) => {
-  let authToken = req.headers.authorization;
   let token;
 
-  if (req.headers.authorization && authToken.startsWith("Bearer"))
-    token = authToken.split(" ")[1];
+  if (
+    req.headers.authorization &&
+    req.headers.authorization.startsWith("Bearer")
+  )
+    token = req.headers.authorization.split(" ")[1];
+
+  // console.log(token);
   if (!token) return next(new AppError(404, "Not Logged in"));
 
   const { data } = jwt.verify(token, process.env.JWT_SECRET);
@@ -86,4 +90,19 @@ exports.protect = catchAsync(async (req, res, next) => {
   req.user = user;
 
   next();
+});
+
+exports.isLoggedIn = catchAsync(async (req, res, next) => {
+  if (
+    req.headers.authorization &&
+    req.headers.authorization.startsWith("Bearer")
+  ) {
+    token = authToken.split(" ")[1];
+
+    const user = await User.findById(token.id);
+
+    if (!user) return next();
+  }
+
+  return next();
 });
