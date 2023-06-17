@@ -4,7 +4,7 @@ const User = require("../Model/userModel");
 const { catchAsync } = require("../Utilities/catchAsync");
 const AppError = require("../Utilities/error");
 
-const sendAuthResponse = (res, user, message, token) => {
+const sendAuthResponse = (res, user, message, token = null) => {
   const userData = {
     name: user.name,
     email: user.email,
@@ -21,20 +21,19 @@ const sendAuthResponse = (res, user, message, token) => {
   });
 };
 
-const createSendToken = ({ _id }, res) => {
+const createSendToken = ({ _id }, res, req) => {
   const cookie = jwt.sign({ data: _id }, process.env.JWT_SECRET, {
     expiresIn: "90d",
   });
 
   const cookieOptions = {
     expires: new Date(Date.now() + 90 * 24 * 60 * 60 * 60),
-    httpOnly: false,
+    httpOnly: true,
     sameSite: "none",
-    // secure: req.secure || req.headers["x-forwarded-proto"] === "https",
+    secure: req.secure || req.headers["x-forwarded-proto"] === "https",
     secure: true,
   };
 
-  res.set("Access-Controll-Allow-Credentials", "*");
   res.cookie("JWT", cookie, cookieOptions);
   return cookie;
 };
@@ -42,7 +41,7 @@ const createSendToken = ({ _id }, res) => {
 exports.signUp = catchAsync(async (req, res) => {
   const user = await User.create(req.body);
 
-  const token = createSendToken(user, res);
+  const token = createSendToken(user, res, req);
 
   sendAuthResponse(res, user, "Account created successfully", token);
 });
@@ -64,7 +63,7 @@ exports.login = catchAsync(async (req, res, next) => {
 
   if (!match) return next(new AppError(203, "Invalid credentials"));
 
-  const token = createSendToken(user, res);
+  const token = createSendToken(user, res, req);
 
   sendAuthResponse(res, user, "Logged In successfully", token);
 });
@@ -78,7 +77,10 @@ exports.protect = catchAsync(async (req, res, next) => {
   )
     token = req.headers.authorization.split(" ")[1];
 
-  // console.log(token);
+  if (req.headers.cookie) {
+    token = req.headers.cookie.split("=")[1];
+  }
+
   if (!token) return next(new AppError(404, "Not Logged in"));
 
   const { data } = jwt.verify(token, process.env.JWT_SECRET);
@@ -93,16 +95,21 @@ exports.protect = catchAsync(async (req, res, next) => {
 });
 
 exports.isLoggedIn = catchAsync(async (req, res, next) => {
+  let token;
+  console.log("HI");
   if (
     req.headers.authorization &&
     req.headers.authorization.startsWith("Bearer")
   ) {
-    token = authToken.split(" ")[1];
-
-    const user = await User.findById(token.id);
-
-    if (!user) return next();
+    token = req.headers.authorization.split(" ")[1];
+  }
+  if (req.headers.cookie) {
+    token = req.headers.cookie.split("=")[1];
   }
 
-  return next();
+  const { data } = jwt.verify(token, process.env.JWT_SECRET);
+
+  const user = await User.findById(data);
+
+  sendAuthResponse(res, user, "Logged In successfully");
 });
