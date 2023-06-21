@@ -21,7 +21,7 @@ app.use(
     origin: [
       "http://localhost:3000",
       "https://master--nsjk.netlify.app",
-      "https://north-star-frontend.vercel.app/",
+      "https://north-star-frontend.vercel.app",
     ],
     credentials: true,
   })
