@@ -27,7 +27,7 @@ const createSendToken = ({ _id }, res, req) => {
   });
 
   const cookieOptions = {
-    expires: new Date(Date.now() + 90 * 24 * 60 * 60 * 60),
+    expires: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
     httpOnly: true,
     sameSite: "none",
     secure: req.secure || req.headers["x-forwarded-proto"] === "https",
@@ -96,7 +96,6 @@ exports.protect = catchAsync(async (req, res, next) => {
 
 exports.isLoggedIn = catchAsync(async (req, res, next) => {
   let token;
-  console.log("HI");
   if (
     req.headers.authorization &&
     req.headers.authorization.startsWith("Bearer")
@@ -112,4 +111,21 @@ exports.isLoggedIn = catchAsync(async (req, res, next) => {
   const user = await User.findById(data);
 
   sendAuthResponse(res, user, "Logged In successfully");
+});
+
+exports.logOut = catchAsync(async (req, res) => {
+  const cookieOptions = {
+    expires: new Date(Date.now() + 1000),
+    httpOnly: true,
+    sameSite: "none",
+    secure: req.secure || req.headers["x-forwarded-proto"] === "https",
+    secure: true,
+  };
+
+  res.cookie("JWT", "expire", cookieOptions);
+
+  res.status(200).json({
+    status: "Success",
+    message: "Logged out successfully",
+  });
 });
