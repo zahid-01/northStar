@@ -20,7 +20,7 @@ app.use(
   cors({
     origin: [
       "http://localhost:3000",
-      "https://nsjk.netlify.app/",
+      "https://nsjk.netlify.app",
       "https://north-star-frontend.vercel.app",
     ],
     credentials: true,
