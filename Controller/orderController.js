@@ -19,7 +19,9 @@ exports.newOrder = catchAsync(async (req, res) => {
 });
 
 exports.allOrders = catchAsync(async (req, res) => {
-  const orders = await Orders.find();
+  const status = req.params.status;
+
+  const orders = await Orders.find({ status });
 
   sendResponse(res, orders, 200);
 });

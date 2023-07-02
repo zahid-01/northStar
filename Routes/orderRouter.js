@@ -10,7 +10,7 @@ const {
 orderRouter.use(protect);
 
 orderRouter.route("/add").post(newOrder);
-orderRouter.get("/all", allOrders);
+orderRouter.get("/all/:status", allOrders);
 orderRouter.get("/myOrders", myOrders);
 
 module.exports = orderRouter;
