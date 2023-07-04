@@ -1,6 +1,6 @@
 const productRouter = require("express").Router();
 
-const { protect } = require("../Controller/authController");
+const { protect, verify } = require("../Controller/authController");
 
 const {
   addProduct,
@@ -15,7 +15,7 @@ const {
 productRouter.get("/", getAllProducts);
 productRouter.route("/:id").get(getProduct);
 
-productRouter.use(protect);
+productRouter.use(protect, verify("ns-admin"));
 productRouter
   .route("/:id")
   .patch(uploadPhoto, resizePhoto, updateProduct)

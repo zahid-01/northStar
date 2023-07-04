@@ -30,8 +30,13 @@ const userSchema = mongoose.Schema({
     required: [true, "Enter a valid phone"],
   },
   address: {
-    type: String,
+    type: [String],
     required: [true, "Enter a valid address"],
+  },
+  role: {
+    type: String,
+    enum: ["ns-admin", "user"],
+    default: "user",
   },
 });
 

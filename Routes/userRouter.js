@@ -1,14 +1,15 @@
+const { protect, verify } = require("../Controller/authController");
 const userRouter = require("express").Router();
-const {
-  signUp,
-  login,
-  isLoggedIn,
-  logOut,
-} = require("../Controller/authController");
 
-userRouter.get("/isLoggedIn", isLoggedIn);
-userRouter.get("/logout", logOut);
-userRouter.post("/signUp", signUp);
-userRouter.post("/login", login);
+const {
+  getAllUsers,
+  getUser,
+  deleteUser,
+  updateUser,
+} = require("../Controller/userController");
+
+userRouter.use(protect);
+
+userRouter.get("/", getAllUsers);
 
 module.exports = userRouter;

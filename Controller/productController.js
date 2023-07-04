@@ -3,13 +3,7 @@ const sharp = require("sharp");
 
 const Product = require("../Model/productsModel");
 
-const {
-  createOne,
-  readAll,
-  readOne,
-  deleteOne,
-  updateOne,
-} = require("./handlerFactory");
+const { createOne, deleteOne, updateOne } = require("./handlerFactory");
 const AppError = require("../Utilities/error");
 const { catchAsync } = require("../Utilities/catchAsync");
 
@@ -80,3 +74,5 @@ exports.getAllProducts = catchAsync(async (req, res) => {
     products,
   });
 });
+
+exports.getFilteredProducts = catchAsync(async (req, res) => {});

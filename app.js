@@ -7,9 +7,10 @@ const path = require("path");
 const appError = require("./Utilities/error");
 const errorController = require("./Controller/errorController");
 
-const userRouter = require("./Routes/userRouter");
+const authRouter = require("./Routes/authRouter");
 const productRouter = require("./Routes/productRouter");
 const orderRouter = require("./Routes/orderRouter");
+const userRouter = require("./Routes/userRouter");
 
 const app = express();
 app.use(express.json());
@@ -29,9 +30,10 @@ app.use(
 app.options("*", cors());
 app.use(express.static(path.join(__dirname, "public")));
 
-app.use("/user", userRouter);
+app.use("/user", authRouter);
 app.use("/products", productRouter);
 app.use("/orders", orderRouter);
+app.use("/people", userRouter);
 
 app.all("*", (_, __, next) => {
   next(new appError(404, "No page with this URL found on this server"));
