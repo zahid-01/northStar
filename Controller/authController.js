@@ -86,7 +86,7 @@ exports.protect = catchAsync(async (req, res, next) => {
     token = req.headers.authorization.split(" ")[1];
 
   if (req.headers.cookie) {
-    token = req.headers.cookie.split("=")[1];
+    token = req.cookies.JWT;
   }
 
   if (!token) return next(new AppError(404, "Not Logged in"));
@@ -110,8 +110,8 @@ exports.isLoggedIn = catchAsync(async (req, res, next) => {
   ) {
     token = req.headers.authorization.split(" ")[1];
   }
-  if (req.headers.cookie) {
-    token = req.headers.cookie.split("=")[1];
+  if (req.cookies) {
+    token = req.cookies.JWT;
   }
 
   const { data } = jwt.verify(token, process.env.JWT_SECRET);
