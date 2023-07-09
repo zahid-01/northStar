@@ -1,4 +1,5 @@
-const stripe = require("stripe");
+const axios = require("axios");
+const crypto = require("crypto");
 
 const Orders = require("../Model/orderModel");
 const Product = require("../Model/productsModel");
@@ -36,39 +37,47 @@ exports.myOrders = catchAsync(async (req, res) => {
 });
 
 exports.getCheckoutSession = catchAsync(async (req, res) => {
-  const product = await Product.findById(req.params.id);
-  const myStripe = stripe(process.env.STRIPE_SECRET);
+  const { productPrice, _id } = await Product.findById(req.params.id);
+  const { phone } = req.user;
 
-  const session = await myStripe.checkout.sessions.create({
-    payment_method_types: ["card"],
+  const payOptions = {
+    merchantId: "MERCHANTUAT",
+    merchantTransactionId: "MT7850590068188104",
+    merchantUserId: _id,
+    amount: productPrice * 100,
+    redirectUrl: "https://webhook.site/redirect-url",
+    redirectMode: "POST",
+    callbackUrl: "https://webhook.site/callback-url",
+    mobileNumber: phone,
+    paymentInstrument: {
+      type: "PAY_PAGE",
+    },
+  };
 
-    success_url: `${req.protocol}://${req.get("host")}/myOrders`,
+  const encodedPayload = btoa(JSON.stringify(payOptions));
 
-    cancel_url: `${req.protocol}://${req.get("host")}`,
-    customer_email: req.user.email,
+  const hash = crypto
+    .createHash("SHA-256")
+    .update(encodedPayload + "/pg/v1/pay" + process.env.PHONEPE_SALT_KEY)
+    .digest("hex");
 
-    line_items: [
-      {
-        price_data: {
-          currency: "inr",
-          unit_amount: product.productPrice,
-          product_data: {
-            name: `${product.productName} Tour`,
-            description: product.productDescription,
-            images: [
-              // `${req.protocol}://${req.get("host")}/img/${product.images[0]}`,
-              `https://zany-gray-basket-clam-sari.cyclic.app/img/products/${product.productCode}-0.jpeg`,
-            ],
-          },
-        },
-        quantity: 1,
-      },
-    ],
-    mode: "payment",
+  const checksumHeader = hash + "###" + process.env.PHONEPE_SALT_INDEX;
+
+  const phonePeRes = await axios({
+    method: "POST",
+    url: " https://api-preprod.phonepe.com/apis/pg-sandbox/pg/v1/pay",
+    data: { request: encodedPayload },
+    headers: {
+      "X-VERIFY": checksumHeader,
+      accept: "application/json",
+      "Content-Type": "application/json",
+    },
   });
+
+  const { url } = phonePeRes.data.data.instrumentResponse.redirectInfo;
 
   res.status(200).json({
     status: "Success",
-    session,
+    url,
   });
 });
