@@ -45,9 +45,10 @@ exports.getCheckoutSession = catchAsync(async (req, res) => {
     merchantTransactionId: "MT7850590068188104",
     merchantUserId: _id,
     amount: productPrice * 100,
-    redirectUrl: "https://webhook.site/redirect-url",
+    redirectUrl: req.protocol + "://" + req.get("host") + "orders/uiCallback",
+    // redirectUrl: "https://webhook.site/ad89f810-68ac-4fe6-bcb7-3d42ad4906c1",
     redirectMode: "POST",
-    callbackUrl: "https://webhook.site/callback-url",
+    callbackUrl: "https://webhook.site/ad89f810-68ac-4fe6-bcb7-3d42ad4906c1",
     mobileNumber: phone,
     paymentInstrument: {
       type: "PAY_PAGE",
@@ -81,3 +82,10 @@ exports.getCheckoutSession = catchAsync(async (req, res) => {
     url,
   });
 });
+
+exports.uiCallback = (req, res) => {
+  console.log(req.response);
+  res.status(200).json({
+    hi: "hi",
+  });
+};

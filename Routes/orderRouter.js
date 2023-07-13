@@ -6,7 +6,10 @@ const {
   allOrders,
   myOrders,
   getCheckoutSession,
+  uiCallback,
 } = require("../Controller/orderController");
+
+orderRouter.post("/uiCallback", uiCallback);
 
 orderRouter.use(protect);
 
