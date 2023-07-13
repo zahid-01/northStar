@@ -45,10 +45,10 @@ exports.getCheckoutSession = catchAsync(async (req, res) => {
     merchantTransactionId: "MT7850590068188104",
     merchantUserId: _id,
     amount: productPrice * 100,
-    redirectUrl: "https://north-star-frontend.vercel.app/orders/uiCallback",
+    redirectUrl: "https://north-star-frontend.vercel.app/orders",
     // redirectUrl: "https://webhook.site/ad89f810-68ac-4fe6-bcb7-3d42ad4906c1",
     redirectMode: "POST",
-    callbackUrl: "https://north-star-zd0a.onrender.com/callBackUrl",
+    callbackUrl: "https://north-star-zd0a.onrender.com/orders/callBackUrl",
     mobileNumber: phone,
     paymentInstrument: {
       type: "PAY_PAGE",
