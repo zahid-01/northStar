@@ -84,7 +84,7 @@ exports.getCheckoutSession = catchAsync(async (req, res) => {
 });
 
 exports.uiCallback = (req, res) => {
-  console.log(req.response);
+  console.log(req);
   res.status(200).json({
     hi: "hi",
   });
