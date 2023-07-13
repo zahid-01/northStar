@@ -45,10 +45,10 @@ exports.getCheckoutSession = catchAsync(async (req, res) => {
     merchantTransactionId: "MT7850590068188104",
     merchantUserId: _id,
     amount: productPrice * 100,
-    redirectUrl: req.protocol + "://" + req.get("host") + "orders/uiCallback",
+    redirectUrl: "http://localhost:5000/orders/uiCallback",
     // redirectUrl: "https://webhook.site/ad89f810-68ac-4fe6-bcb7-3d42ad4906c1",
     redirectMode: "POST",
-    callbackUrl: "https://webhook.site/ad89f810-68ac-4fe6-bcb7-3d42ad4906c1",
+    callbackUrl: "http://localhost:5000/orders/callBackUrl",
     mobileNumber: phone,
     paymentInstrument: {
       type: "PAY_PAGE",
@@ -84,8 +84,11 @@ exports.getCheckoutSession = catchAsync(async (req, res) => {
 });
 
 exports.uiCallback = (req, res) => {
-  console.log(req);
-  res.status(200).json({
-    hi: "hi",
-  });
+  console.log(req.body);
+  res.redirect("http://localhost:3000/UICallback");
+};
+
+exports.callbackUrl = (req, res, next) => {
+  console.log(req.body);
+  next();
 };
