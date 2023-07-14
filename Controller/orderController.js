@@ -3,6 +3,7 @@ const crypto = require("crypto");
 
 const Orders = require("../Model/orderModel");
 const Product = require("../Model/productsModel");
+const Payment = require("../Model/paymentModel");
 
 const { catchAsync } = require("../Utilities/catchAsync");
 
@@ -37,16 +38,17 @@ exports.myOrders = catchAsync(async (req, res) => {
 });
 
 exports.getCheckoutSession = catchAsync(async (req, res) => {
-  const { productPrice, _id } = await Product.findById(req.params.id);
-  const { phone } = req.user;
+  const { productPrice } = await Product.findById(req.params.id);
+  const { phone, _id } = req.user;
+
+  console.log(req.user._id.toString());
 
   const payOptions = {
     merchantId: "MERCHANTUAT",
     merchantTransactionId: "MT7850590068188104",
-    merchantUserId: _id,
+    merchantUserId: _id.toString(),
     amount: productPrice * 100,
-    redirectUrl: "https://north-star-frontend.vercel.app/orders",
-    // redirectUrl: "https://webhook.site/ad89f810-68ac-4fe6-bcb7-3d42ad4906c1",
+    redirectUrl: "https://north-star-frontend.vercel.app/myOrders",
     redirectMode: "POST",
     callbackUrl: "https://north-star-zd0a.onrender.com/orders/callBackUrl",
     mobileNumber: phone,
@@ -80,15 +82,27 @@ exports.getCheckoutSession = catchAsync(async (req, res) => {
   res.status(200).json({
     status: "Success",
     url,
+    data: phonePeRes.data,
   });
 });
 
-exports.uiCallback = (req, res) => {
-  console.log(req.body);
-  res.redirect("http://localhost:3000/UICallback");
-};
+exports.callbackUrl = catchAsync(async (req, res, next) => {
+  const decodedPayload = JSON.parse(atob(req.body.response));
 
-exports.callbackUrl = (req, res, next) => {
-  console.log(req.body);
-  next();
-};
+  const paymentResponse = {
+    success: decodedPayload.success,
+    code: decodedPayload.code,
+    message: decodedPayload.message,
+    merchantId: decodedPayload.data.merchantId,
+    merchantTransactionId: decodedPayload.data.merchantTransactionId,
+    transactionId: decodedPayload.data.transactionId,
+    amount: decodedPayload.data.amount,
+    state: decodedPayload.data.state,
+    responseCode: decodedPayload.data.responseCode,
+    type: decodedPayload.data.paymentInstrument.type,
+  };
+
+  await Payment.create(paymentResponse);
+
+  res.json({ recieved: true });
+});
