@@ -41,6 +41,16 @@ const paymentSchema = mongoose.Schema({
     type: String,
     required: [true, "Provide type"],
   },
+  product: {
+    type: mongoose.Schema.ObjectId,
+    ref: "products",
+    required: [true, "Provide the product Id"],
+  },
+  customer: {
+    type: mongoose.Schema.ObjectId,
+    ref: "User",
+    required: [true, "Provide the customer Id"],
+  },
 });
 
 const Payment = new mongoose.model("payments", paymentSchema);

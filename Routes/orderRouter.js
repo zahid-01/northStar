@@ -7,13 +7,14 @@ const {
   myOrders,
   getCheckoutSession,
   callbackUrl,
+  uiCallback,
 } = require("../Controller/orderController");
 
-orderRouter.post("/callBackUrl", callbackUrl);
+orderRouter.post("/callBackUrl/:user/:item", callbackUrl);
+orderRouter.post("/uiCallBack", uiCallback);
 
 orderRouter.use(protect);
 
-orderRouter.route("/add").post(newOrder);
 orderRouter.get("/all/:status", allOrders);
 orderRouter.get("/myOrders", myOrders);
 orderRouter.get("/get-checkout-session/:id", getCheckoutSession);

@@ -15,12 +15,13 @@ const sendResponse = (res, data, statusCode) => {
   });
 };
 
-exports.newOrder = catchAsync(async (req, res) => {
-  req.body.customer = req.user;
+const newOrder = catchAsync(async (user, item) => {
+  const body = {
+    product: item,
+    customer: user,
+  };
 
-  const order = await Orders.create(req.body);
-
-  sendResponse(res, order, 200);
+  const order = await Orders.create(body);
 });
 
 exports.allOrders = catchAsync(async (req, res) => {
@@ -38,10 +39,10 @@ exports.myOrders = catchAsync(async (req, res) => {
 });
 
 exports.getCheckoutSession = catchAsync(async (req, res) => {
-  const { productPrice } = await Product.findById(req.params.id);
-  const { phone, _id } = req.user;
-
-  console.log(req.user._id.toString());
+  const { productPrice, _id: productId } = await Product.findById(
+    req.params.id
+  );
+  const { phone, _id: userId } = req.user;
 
   const payOptions = {
     merchantId: "MERCHANTUAT",
@@ -49,8 +50,9 @@ exports.getCheckoutSession = catchAsync(async (req, res) => {
     merchantUserId: _id.toString(),
     amount: productPrice * 100,
     redirectUrl: "https://north-star-frontend.vercel.app/myOrders",
+    // redirectUrl: "http://localhost:5000/orders/uiCallBack",
     redirectMode: "REDIRECT",
-    callbackUrl: "https://north-star-zd0a.onrender.com/orders/callBackUrl",
+    callbackUrl: `https://north-star-zd0a.onrender.com/orders/callBackUrl/${userId.toString()}/${productId.toString()}`,
     mobileNumber: phone,
     paymentInstrument: {
       type: "PAY_PAGE",
@@ -87,6 +89,9 @@ exports.getCheckoutSession = catchAsync(async (req, res) => {
 });
 
 exports.callbackUrl = catchAsync(async (req, res, next) => {
+  console.log(req.params);
+  const { user, item } = req.params;
+
   const decodedPayload = JSON.parse(atob(req.body.response));
 
   const paymentResponse = {
@@ -100,9 +105,21 @@ exports.callbackUrl = catchAsync(async (req, res, next) => {
     state: decodedPayload.data.state,
     responseCode: decodedPayload.data.responseCode,
     type: decodedPayload.data.paymentInstrument.type,
+    product: item,
+    customer: user,
   };
 
   await Payment.create(paymentResponse);
 
+  if (decodedPayload.success) {
+    newOrder(user, item);
+  }
+
   res.json({ recieved: true });
 });
+
+exports.uiCallback = (req, res, next) => {
+  res.json({
+    data: req.body,
+  });
+};
