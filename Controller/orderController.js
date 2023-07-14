@@ -47,7 +47,7 @@ exports.getCheckoutSession = catchAsync(async (req, res) => {
   const payOptions = {
     merchantId: "MERCHANTUAT",
     merchantTransactionId: "MT7850590068188104",
-    merchantUserId: _id.toString(),
+    merchantUserId: userId.toString(),
     amount: productPrice * 100,
     redirectUrl: "https://north-star-frontend.vercel.app/myOrders",
     // redirectUrl: "http://localhost:5000/orders/uiCallBack",
